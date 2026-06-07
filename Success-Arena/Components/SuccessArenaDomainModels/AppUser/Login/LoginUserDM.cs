@@ -17,12 +17,9 @@ namespace SuccessArenaDomainModels.AppUser.Login
         [Required]
         public RoleTypeDM RoleType { get; set; }
 
-        [Required]
         [StringLength(50, MinimumLength = 3)]
-        public string LoginId { get; set; }
+        public string? LoginId { get; set; }
 
-        [Required]
-        [StringLength(50, MinimumLength = 3)]
         [DefaultValue("")]
         public string FirstName { get; set; }
 

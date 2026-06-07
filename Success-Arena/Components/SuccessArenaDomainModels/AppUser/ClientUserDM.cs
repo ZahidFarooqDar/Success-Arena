@@ -10,7 +10,9 @@ namespace SuccessArenaDomainModels.AppUser
         {
         }
         public GenderDM? Gender { get; set; }
+        public string? PaymentId { get; set; }
 
+        public string? FirebaseId { get; set; }
 
     }
 }
