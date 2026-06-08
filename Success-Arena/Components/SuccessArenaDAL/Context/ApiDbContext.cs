@@ -2,6 +2,7 @@
 using SuccessArenaDAL.Base;
 using SuccessArenaDomainModels.AppUser;
 using SuccessArenaDomainModels.Foundation;
+using SuccessArenaDomainModels.v1;
 
 namespace SuccessArenaDAL.Context
 {
@@ -27,6 +28,29 @@ namespace SuccessArenaDAL.Context
         #endregion App Users
 
         #region SuccessArena        
+        public DbSet<ExamDM> Exams { get; set; }
+
+        public DbSet<PostDM> Posts { get; set; }
+
+        public DbSet<SubjectDM> Subjects { get; set; }
+
+        public DbSet<ExamPostDM> ExamPosts { get; set; }
+
+        public DbSet<PostSubjectDM> PostSubjects { get; set; }
+
+        public DbSet<QuestionDM> Questions { get; set; }
+
+        public DbSet<QuestionOptionDM> QuestionOptions { get; set; }
+
+        public DbSet<TestPackageDM> TestPackages { get; set; }
+
+        public DbSet<UserTestPackageDM> UserTestPackages { get; set; }
+
+        public DbSet<TestAttemptDM> TestAttempts { get; set; }
+
+        public DbSet<TestAttemptAnswerDM> TestAttemptAnswers { get; set; }
+
+        public DbSet<InvoiceDM> Invoices { get; set; }
 
         #endregion SuccessArena
 

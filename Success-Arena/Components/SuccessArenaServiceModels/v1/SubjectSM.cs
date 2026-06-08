@@ -1,0 +1,13 @@
+﻿using SuccessArenaServiceModels.Foundation.Base;
+
+namespace SuccessArenaServiceModels.v1
+{
+    public class SubjectSM : SuccessArenaServiceModelBase<int>
+    {
+        public string Name { get; set; }
+
+        public string Code { get; set; }
+
+        public bool IsActive { get; set; }
+    }
+}

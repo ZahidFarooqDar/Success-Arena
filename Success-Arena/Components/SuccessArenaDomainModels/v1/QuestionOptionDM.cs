@@ -1,10 +1,14 @@
 ﻿using SuccessArenaDomainModels.Foundation.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SuccessArenaDomainModels.v1
 {
     public class QuestionOptionDM : SuccessArenaDomainModelBase<int>
     {
+        [ForeignKey(nameof(Question))]
         public int QuestionId { get; set; }
+
+        public virtual QuestionDM Question { get; set; }
 
         public string OptionLabel { get; set; }
 
@@ -15,7 +19,5 @@ namespace SuccessArenaDomainModels.v1
         public bool IsCorrect { get; set; }
 
         public int DisplayOrder { get; set; }
-
-        public virtual QuestionDM Question { get; set; }
     }
 }

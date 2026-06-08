@@ -1,4 +1,5 @@
 ﻿using SuccessArenaDomainModels.Foundation.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SuccessArenaDomainModels.v1
 {
@@ -6,12 +7,17 @@ namespace SuccessArenaDomainModels.v1
     {
         public string Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public int ExamId { get; set; }
+        [ForeignKey(nameof(Post))]
+        public int PostId { get; set; }
 
-        /// NULL = Full Exam Test
+        public virtual PostDM Post { get; set; }
+
+        [ForeignKey(nameof(Subject))]
         public int? SubjectId { get; set; }
+
+        public virtual SubjectDM? Subject { get; set; }
 
         public decimal Price { get; set; }
 
@@ -19,15 +25,13 @@ namespace SuccessArenaDomainModels.v1
 
         public int DurationInMinutes { get; set; }
 
-        /// Number of attempts allowed
         public int AllowedAttempts { get; set; }
 
         public bool IsFree { get; set; }
 
         public bool IsActive { get; set; }
 
-        public virtual ExamDM Exam { get; set; }
-
-        public virtual SubjectDM Subject { get; set; }
+        public virtual ICollection<UserTestPackageDM> UserTestPackages { get; set; }
+            = new List<UserTestPackageDM>();
     }
 }
