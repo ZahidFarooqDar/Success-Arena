@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using SuccessArenaBAL.ExceptionHandler;
 using SuccessArenaBAL.Foundation.Base;
 using SuccessArenaDAL.Context;
+using SuccessArenaDomainModels.AppUser.Login;
 using SuccessArenaDomainModels.Enums;
 using SuccessArenaServiceModels.AppUser;
 using SuccessArenaServiceModels.AppUser.Login;
@@ -32,7 +33,7 @@ namespace SuccessArenaBAL.Token
         #endregion Constructor
 
         #region Token
-        public async Task<(LoginUserSM, int)> ValidateLoginAndGenerateToken(TokenRequestSM tokenReq)
+        public async Task<LoginUserSM> ValidateLoginAndGenerateToken(TokenRequestSM tokenReq)
         {
             LoginUserSM? loginUserSM = null;
             int compId = default;
@@ -43,7 +44,7 @@ namespace SuccessArenaBAL.Token
                 case RoleTypeSM.SuperAdmin:
                 case RoleTypeSM.SystemAdmin:
                     var appUser = await _apiDbContext.ApplicationUsers
-                        .FirstOrDefaultAsync(x => x.LoginId == tokenReq.LoginId && x.PasswordHash == passwordHash && x.RoleType == (RoleTypeDM)tokenReq.RoleType);
+                        .FirstOrDefaultAsync(x => x.LoginId == tokenReq.LoginId && x.Password == passwordHash && x.RoleType == (RoleTypeDM)tokenReq.RoleType);
                     if (appUser != null)
                     { loginUserSM = _mapper.Map<ApplicationUserSM>(appUser); }
 
@@ -52,7 +53,7 @@ namespace SuccessArenaBAL.Token
                 case RoleTypeSM.ClientEmployee:
                     {
                         var endUser = await _apiDbContext.ClientUsers
-                        .Where(u => (u.EmailId == tokenReq.LoginId || u.LoginId == tokenReq.LoginId) && u.PasswordHash == null)
+                        .Where(u => u.Email == tokenReq.LoginId && u.Password == null)
                         .FirstOrDefaultAsync();
                         if (endUser != null)
                         {
@@ -61,23 +62,15 @@ namespace SuccessArenaBAL.Token
                             throw new SuccessArenaException(ApiErrorTypeSM.InvalidInputData_NoLog, @"Please log in using your Google or Facebook account or Click on Forgot Password to change your password", "Please log in using your Google or Facebook account or Click on Forgot Password to change your password");
 
                         }
-                        /*var data = await (from comp in _apiDbContext.ClientCompanyDetails
-                                          join user in _apiDbContext.ClientUsers
-                                          on comp.Id equals user.ClientCompanyDetailId
-                                          where user.LoginId == tokenReq.LoginId && user.PasswordHash == passwordHash
-                                          && comp.CompanyCode == tokenReq.CompanyCode && user.RoleType == (RoleTypeDM)tokenReq.RoleType
-                                          select new { User = user, CompId = comp.Id }).FirstOrDefaultAsync();*/
-                        //var cId = await _apiDbContext.ClientCompanyDetails.Where(x => x.CompanyCode == tokenReq.CompanyCode).Select(x => x.Id).FirstOrDefaultAsync();
-                        var cId = 1;
+                        
 
                         var data = await (from user in _apiDbContext.ClientUsers
-                                          where (user.EmailId == tokenReq.LoginId || user.LoginId == tokenReq.LoginId) && user.PasswordHash == passwordHash
-                                          select new { User = user, CompId = cId }).FirstOrDefaultAsync();
+                                          where (user.Email == tokenReq.LoginId) && user.Password == passwordHash
+                                          select new { User = user}).FirstOrDefaultAsync();
 
                         if (data != null && data.User != null)
                         {
-                            loginUserSM = _mapper.Map<ClientUserSM>(data.User);
-                            compId = data.CompId;
+                            loginUserSM = _mapper.Map<LoginUserSM>(data.User);
                         }
                     }
                     break;
@@ -98,20 +91,7 @@ namespace SuccessArenaBAL.Token
                         }
                         break;*/
             }
-            if (loginUserSM != null)
-            {
-                if (!loginUserSM.ProfilePicturePath.IsNullOrEmpty())
-                {
-                    loginUserSM.ProfilePicturePath = await ConvertToBase64(loginUserSM.ProfilePicturePath);
-                }
-                else
-                {
-                    loginUserSM.ProfilePicturePath = null;
-                }
-            }
-            return (loginUserSM, compId);
-
-
+            return loginUserSM;
         }
 
         #endregion Token

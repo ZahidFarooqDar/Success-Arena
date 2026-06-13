@@ -70,12 +70,7 @@ namespace SuccessArenaBAL.AppUsers
             if (applicationUserDM != null)
             {
 
-                var sm = _mapper.Map<ApplicationUserSM>(applicationUserDM);
-                if (!sm.ProfilePicturePath.IsNullOrEmpty())
-                {
-                    sm.ProfilePicturePath = await ConvertToBase64(sm.ProfilePicturePath);
-
-                }
+                var sm = _mapper.Map<ApplicationUserSM>(applicationUserDM);                
                 return sm;
             }
             else
@@ -121,7 +116,7 @@ namespace SuccessArenaBAL.AppUsers
             {
                 throw new SuccessArenaException(ApiErrorTypeSM.InvalidInputData_NoLog, "Access Denied to Add another type of User", "Access Denied to Add another type of User");
             }
-            var existingUserWithEmail = await _apiDbContext.ApplicationUsers.Where(x => x.EmailId == applicationUserSM.EmailId).FirstOrDefaultAsync();
+            var existingUserWithEmail = await _apiDbContext.ApplicationUsers.Where(x => x.Email == applicationUserSM.Email).FirstOrDefaultAsync();
             var existingUserWithLoginId = await _apiDbContext.ApplicationUsers.Where(x => x.LoginId == applicationUserSM.LoginId).FirstOrDefaultAsync();
             if (existingUserWithEmail != null)
             {
@@ -139,22 +134,15 @@ namespace SuccessArenaBAL.AppUsers
             objDM.IsEmailConfirmed = true;
             objDM.IsPhoneNumberConfirmed = true;
             // objDM.LoginStatus = DomainModels.Enums.LoginStatusDM.Enabled;
-            if (objDM.PasswordHash.IsNullOrEmpty())
+            if (objDM.Password.IsNullOrEmpty())
             {
                 throw new SuccessArenaException(ApiErrorTypeSM.InvalidInputData_NoLog, @"Password is Mandatory", "Please Enter  Password");
             }
-            var passHash = await _passwordEncryptHelper.ProtectAsync<string>(objDM.PasswordHash);
+            var passHash = await _passwordEncryptHelper.ProtectAsync<string>(objDM.Password);
             if (passHash != null)
             {
-                objDM.PasswordHash = passHash;
-            }
-            if (!objDM.ProfilePicturePath.IsNullOrEmpty())
-            {
-                profilePicturePath = await SaveFromBase64(objDM.ProfilePicturePath);
-
-            }
-
-            objDM.ProfilePicturePath = profilePicturePath;
+                objDM.Password = passHash;
+            }            
             await _apiDbContext.ApplicationUsers.AddAsync(objDM);
             if (await _apiDbContext.SaveChangesAsync() > 0)
             {
@@ -167,11 +155,6 @@ namespace SuccessArenaBAL.AppUsers
                 return null;
             }
         }
-
-
-        public async Task<string> AddOrUpdateProfilePictureInDb(int userId, string webRootPath, IFormFile postedFile)
-            => await AddOrUpdateProfilePictureInDb(await _apiDbContext.ClientUsers.FirstOrDefaultAsync(x => x.Id == userId), webRootPath, postedFile);
-
 
         /// <summary>
         /// Updates ApplicationUser in the database using Id
@@ -207,14 +190,14 @@ namespace SuccessArenaBAL.AppUsers
                 }
             }
 
-            if (objSM.PasswordHash.IsNullOrEmpty())
+            if (objSM.Password.IsNullOrEmpty())
             {
-                objSM.PasswordHash = objDM.PasswordHash;
+                objSM.Password = objDM.Password;
             }
             else
             {
-                var passHash = await _passwordEncryptHelper.ProtectAsync(objSM.PasswordHash);
-                objSM.PasswordHash = passHash;
+                var passHash = await _passwordEncryptHelper.ProtectAsync(objSM.Password);
+                objSM.Password = passHash;
             }
 
             var existingClient = await _apiDbContext.ApplicationUsers
@@ -222,7 +205,7 @@ namespace SuccessArenaBAL.AppUsers
                    .FirstOrDefaultAsync();
 
             var existingClientWithEmail = await _apiDbContext.ApplicationUsers
-               .Where(l => l.EmailId == objSM.EmailId)
+               .Where(l => l.Email == objSM.Email)
                .FirstOrDefaultAsync();
             string imageFullPath = null;
             if (objDM != null)
@@ -235,31 +218,15 @@ namespace SuccessArenaBAL.AppUsers
                 objSM.IsPhoneNumberConfirmed = objDM.IsPhoneNumberConfirmed;
                 objSM.LoginStatus = (LoginStatusSM)objDM.LoginStatus;
 
-                if (!objSM.ProfilePicturePath.IsNullOrEmpty())
-                {
-                    if (!objDM.ProfilePicturePath.IsNullOrEmpty())
-                    {
-                        imageFullPath = Path.GetFullPath(objDM.ProfilePicturePath);
-                    }
-                    var IsCompanyLogoUpdated = await UpdateProfilePicture(userId, objSM.ProfilePicturePath);
-                    if (IsCompanyLogoUpdated == true)
-                    {
-                        objSM.ProfilePicturePath = null;
-                    }
-                }
-                else
-                {
-                    objSM.ProfilePicturePath = objDM.ProfilePicturePath;
-                }
-
+                
                 if (existingClient != null && objSM.LoginId != objDM.LoginId)
                 {
                     throw new SuccessArenaException(ApiErrorTypeSM.Access_Denied_Log, $"Application User With Login Id: {objSM.LoginId} Already Existed...Choose Another LoginId", $"Application User With Login Id: {objSM.LoginId} Already Existed...Choose Another LoginId");
                 }
 
-                if (existingClientWithEmail != null && objSM.EmailId != objDM.EmailId)
+                if (existingClientWithEmail != null && objSM.Email != objDM.Email)
                 {
-                    throw new SuccessArenaException(ApiErrorTypeSM.Access_Denied_Log, $"Application User With Email Id: {objSM.EmailId} Already Existed...Choose Another Email Id", $"Application User With Email Id: {objSM.LoginId} Already Existed...Choose Another EmailId");
+                    throw new SuccessArenaException(ApiErrorTypeSM.Access_Denied_Log, $"Application User With Email Id: {objSM.Email} Already Existed...Choose Another Email Id", $"Application User With Email Id: {objSM.LoginId} Already Existed...Choose Another EmailId");
                 }
                 if (objSM.DateOfBirth == default)
                 {
@@ -375,8 +342,7 @@ namespace SuccessArenaBAL.AppUsers
 
         }
 
-        public async Task<DeleteResponseRoot> DeleteProfilePictureById(int userId, string webRootPath)
-            => await DeleteProfilePictureById(await _apiDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Id == userId), webRootPath);
+        
 
         #endregion Delete
 
@@ -478,23 +444,7 @@ namespace SuccessArenaBAL.AppUsers
             if (objDM == null)
             {
                 throw new SuccessArenaException(ApiErrorTypeSM.Fatal_Log, "Application User not found...Please check Again", "Application User not found...Please check Again");
-            }
-            if (!objDM.ProfilePicturePath.IsNullOrEmpty())
-            {
-                imageFullPath = Path.GetFullPath(objDM.ProfilePicturePath);
-            }
-            if (base64String == null)
-            {
-                objDM.ProfilePicturePath = null;
-            }
-            else
-            {
-                var imageRelativePath = await SaveFromBase64(base64String);
-                if (imageRelativePath != null)
-                {
-                    objDM.ProfilePicturePath = imageRelativePath;
-                }
-            }
+            }            
             objDM.LastModifiedBy = _loginUserDetail?.LoginId;
             objDM.LastModifiedOnUTC = DateTime.UtcNow;
             if (await _apiDbContext.SaveChangesAsync() > 0)

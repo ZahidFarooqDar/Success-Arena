@@ -203,27 +203,7 @@ namespace SuccessArenaFoundation.Controllers.AppUsers
 
         #endregion Add/Update Endpoints
 
-        #region Delete Endpoints
-
-
-        [HttpDelete("mine/logo")]
-        [Authorize(AuthenticationSchemes = SuccessArenaBearerTokenAuthHandlerRoot.DefaultSchema, Roles = "SuperAdmin,SystemAdmin")]
-        public async Task<ActionResult<ApiResponse<DeleteResponseRoot>>> DeleteUserProfilePicture()
-        {
-            #region Check Request
-
-            int userId = User.GetUserRecordIdFromCurrentUserClaims();
-            if (userId <= 0)
-            { return NotFound(ModelConverter.FormNewErrorResponse(DomainConstantsRoot.DisplayMessagesRoot.Display_IdNotInClaims)); }
-
-            #endregion Check Request
-
-            var resp = await _applicationUserProcess.DeleteProfilePictureById(userId, _environment.WebRootPath);
-            if (resp != null && resp.DeleteResult)
-                return Ok(ModelConverter.FormNewSuccessResponse(resp));
-            else
-                return NotFound(ModelConverter.FormNewErrorResponse(resp?.DeleteMessage, ApiErrorTypeSM.NoRecord_NoLog));
-        }
+        #region Delete Endpoints           
 
 
         #endregion Delete Endpoints

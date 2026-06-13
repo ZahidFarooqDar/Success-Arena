@@ -29,14 +29,14 @@ namespace SuccessArenaDomainModels.AppUser.Login
         public string? LastName { get; set; }
         [MaxLength(50)]
         [EmailAddress]
-        public string EmailId { get; set; }
+        public string Email { get; set; }
 
-        public string? PasswordHash { get; set; }
+        public string? Password { get; set; }
         [DataType(DataType.PhoneNumber)]
         [DefaultValue(null)]
 
         public string? PhoneNumber { get; set; }
-        public string? ProfilePicturePath { get; set; }
+        public string? ProfilePictureUrl { get; set; }
 
         [DefaultValue(false)]
         public bool IsEmailConfirmed { get; set; }

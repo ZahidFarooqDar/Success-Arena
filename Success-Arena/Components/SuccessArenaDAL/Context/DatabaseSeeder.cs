@@ -65,15 +65,14 @@ namespace SuccessArenaDAL.Context
                 RoleType = RoleTypeDM.SuperAdmin,
                 FirstName = "Super",
                 MiddleName = "Admin",
-                EmailId = "saone@email.com",
+                Email = "saone@email.com",
                 LastName = "One",
                 LoginId = "super1",
                 IsEmailConfirmed = true,
                 LoginStatus = LoginStatusDM.Enabled,
                 PhoneNumber = "1234567890",
                 IsPhoneNumberConfirmed = true,
-                PasswordHash = encryptorFunc("super1"),
-                ProfilePicturePath = "wwwroot/content/loginusers/profiles/profile.jpg",
+                Password = encryptorFunc("super1"),
                 CreatedBy = defaultCreatedBy,
                 CreatedOnUTC = DateTime.UtcNow
             };
@@ -89,15 +88,14 @@ namespace SuccessArenaDAL.Context
                 RoleType = RoleTypeDM.SystemAdmin,
                 FirstName = "System",
                 MiddleName = "Admin",
-                EmailId = "sysone@email.com",
+                Email = "sysone@email.com",
                 LastName = "One",
                 LoginId = "system1",
                 PhoneNumber = "1234567890",
-                ProfilePicturePath = "wwwroot/content/loginusers/profiles/profile.jpg",
                 IsEmailConfirmed = true,
                 LoginStatus = LoginStatusDM.Enabled,
                 IsPhoneNumberConfirmed = true,
-                PasswordHash = encryptorFunc("systemadmin1"),
+                Password = encryptorFunc("systemadmin1"),
                 CreatedBy = defaultCreatedBy,
                 CreatedOnUTC = DateTime.UtcNow
             };
@@ -111,39 +109,18 @@ namespace SuccessArenaDAL.Context
             var cAdmin1 = new ClientUserDM()
             {
                 RoleType = RoleTypeDM.ClientAdmin,
-                FirstName = "Client",
-                MiddleName = "User",
-                EmailId = "clientuser1@email.com",
-                LastName = "One",
-                LoginId = "clientuser1",
+                Email = "clientuser1@email.com",
                 IsEmailConfirmed = true,
                 PhoneNumber = "1234567890",
                 LoginStatus = LoginStatusDM.Enabled,
                 IsPhoneNumberConfirmed = true,
-                PasswordHash = encryptorFunc("pass123"),
-                ProfilePicturePath = "wwwroot/content/loginusers/profiles/profile.jpg",
+                Password = encryptorFunc("pass123"),
                 CreatedBy = defaultCreatedBy,
                 CreatedOnUTC = DateTime.UtcNow
             };
-            var cAdmin2 = new ClientUserDM()
-            {
-                RoleType = RoleTypeDM.ClientAdmin,
-                FirstName = "Client",
-                MiddleName = "user",
-                EmailId = "clientuser2@email.com",
-                LastName = "Two",
-                LoginId = "clientuser2",
-                IsEmailConfirmed = true,
-                PhoneNumber = "1234567890",
-                LoginStatus = LoginStatusDM.Enabled,
-                IsPhoneNumberConfirmed = true,
-                PasswordHash = encryptorFunc("pass123"),
-                ProfilePicturePath = "wwwroot/content/loginusers/profiles/profile.jpg",
-                CreatedBy = defaultCreatedBy,
-                CreatedOnUTC = DateTime.UtcNow
-            };
+            
 
-            apiDb.ClientUsers.AddRange(cAdmin1, cAdmin2);
+            apiDb.ClientUsers.AddRange(cAdmin1);
             apiDb.SaveChanges();
 
         }

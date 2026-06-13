@@ -56,7 +56,7 @@ namespace SuccessArenaFoundation.Controllers.Token
 
             #endregion Check Request
 
-            (LoginUserSM userSM, int compId) = await _tokenProcess.ValidateLoginAndGenerateToken(innerReq);
+            LoginUserSM userSM = await _tokenProcess.ValidateLoginAndGenerateToken(innerReq);
             if (userSM == null)
             {
                 return NotFound(ModelConverter.FormNewErrorResponse("Invalid Credentials",
@@ -81,14 +81,9 @@ namespace SuccessArenaFoundation.Controllers.Token
                     new Claim(ClaimTypes.Name,innerReq.LoginId),
                     new Claim(ClaimTypes.Role,userSM.RoleType.ToString()),
                     new Claim(ClaimTypes.GivenName,userSM.FirstName + " " + userSM.MiddleName + " " +userSM.LastName ),
-                    new Claim(ClaimTypes.Email,userSM.EmailId),
+                    new Claim(ClaimTypes.Email,userSM.Email),
                     new Claim(DomainConstants.ClaimsRoot.Claim_DbRecordId,userSM.Id.ToString())
-                };
-                if (compId != default)
-                {
-                    claims.Add(new Claim(DomainConstants.ClaimsRoot.Claim_ClientCode, innerReq.CompanyCode));
-                    claims.Add(new Claim(DomainConstants.ClaimsRoot.Claim_ClientId, compId.ToString()));
-                }
+                };   
                 var expiryDate = DateTime.Now.AddDays(_apiConfiguration.DefaultTokenValidityDays);
 
                 //// creating object of DateTime 
@@ -99,14 +94,13 @@ namespace SuccessArenaFoundation.Controllers.Token
                 //                         31, 11, 59, 59);
                 //var x = date2.Subtract(date1);
                 //expiryDate = DateTime.Now.AddDays(x.Days);
-                var token = await _jwtHandler.ProtectAsync(_apiConfiguration.JwtTokenSigningKey, claims, new DateTimeOffset(DateTime.Now), new DateTimeOffset(expiryDate), "SuccessArenaKiller");
+                var token = await _jwtHandler.ProtectAsync(_apiConfiguration.JwtTokenSigningKey, claims, new DateTimeOffset(DateTime.Now), new DateTimeOffset(expiryDate), "SuccessArena");
                 // here if user is derived class, all properties will be sent
                 var tokenResponse = new TokenResponseSM()
                 {
                     AccessToken = token,
                     LoginUserDetails = userSM,
-                    ExpiresUtc = expiryDate,
-                    ClientCompanyId = compId
+                    ExpiresUtc = expiryDate
                 };
                 return Ok(ModelConverter.FormNewSuccessResponse(tokenResponse));
             }
