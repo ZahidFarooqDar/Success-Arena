@@ -1,4 +1,5 @@
 ﻿using SuccessArenaDomainModels.AppUser;
+using SuccessArenaDomainModels.Enums;
 using SuccessArenaDomainModels.Foundation.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,6 +19,16 @@ namespace SuccessArenaDomainModels.v1
 
         public string InvoiceNumber { get; set; }
 
+        public PaymentStatusDM PaymentStatus { get; set; }
+
+
+        public DateTime PaymentDateUtc { get; set; }
+
+        public string RazorPayOrderId { get; set; }
+
+        public string RazorPayPaymentId { get; set; }
+
+        public string RazorPaySignature { get; set; }
         public decimal TotalAmount { get; set; }
 
         public string? PaymentReference { get; set; }

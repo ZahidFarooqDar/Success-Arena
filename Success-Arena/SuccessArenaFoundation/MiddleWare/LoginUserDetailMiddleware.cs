@@ -21,13 +21,14 @@ namespace SuccessArenaFoundation.MiddleWare
                 // Use the correct claim types based on what you provided
                 var nameClaim = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value;
                 var roleClaim = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+                var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
                 var dbRecordIdClaim = claimsPrincipal.FindFirst("dbRid")?.Value;
                 if (!string.IsNullOrEmpty(dbRecordIdClaim) && int.TryParse(dbRecordIdClaim, out var dbRecordId))
                 {
                     loginUserDetail.DbRecordId = dbRecordId;
                 }
 
-                loginUserDetail.LoginId = nameClaim;
+                loginUserDetail.LoginId = emailClaim;
 
                 if (!string.IsNullOrEmpty(roleClaim) && Enum.TryParse<RoleTypeSM>(roleClaim, out var userType))
                 {

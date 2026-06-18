@@ -1,4 +1,5 @@
 ﻿using SuccessArenaDomainModels.AppUser;
+using SuccessArenaDomainModels.Enums;
 using SuccessArenaDomainModels.Foundation.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,7 +19,10 @@ namespace SuccessArenaDomainModels.v1
 
         public int AllowedAttempts { get; set; }
 
+        public PaymentStatusDM PaymentStatus { get; set; }
         public int AttemptsUsed { get; set; }
+
+        public string? RecieptId { get; set; }
 
         public DateTime PurchasedOn { get; set; }
 

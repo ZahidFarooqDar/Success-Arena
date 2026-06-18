@@ -10,6 +10,8 @@ namespace SuccessArenaServiceModels.v1
 
         public int AllowedAttempts { get; set; }
 
+        public string? ReceiptId { get; set; }
+
         public int AttemptsUsed { get; set; }
 
         public DateTime PurchasedOn { get; set; }
